@@ -1,6 +1,8 @@
 # WARNING
-I am actively developing this project. It is not considered to be 
-ready yet. If you are reading this message, use at your own risk.
+I have been actively developing in a separate repo and I am currently
+moving features, one-by-one, into this public repo. At this time, this
+repo is not ready to use and is not complete. This message will be 
+updated once it is ready.
 
 # Ampy
 ___
