@@ -1,4 +1,37 @@
-.idea/
+#**/__pycache__/
+#ampy/**/__pycache__/
 
-**/__pycache__/
-ampy/**/__pycache__/
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# =========================
+# Sphinx docs
+# =========================
+docs/_build/
+docs/build/
+docs/source/_autosummary/
+
+# =========================
+# IDEs / editors
+# =========================
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
