@@ -125,10 +125,10 @@ class CornerPlotDefaults:
     fill_contours: bool = True
     """Whether to fill contour levels."""
 
-    smooth: float = 0.75
+    smooth: float = 0.7
     """Smoothing applied to 2D histograms (KDE-ish; see ``corner`` docs)."""
 
-    smooth1d: float = 0.75
+    smooth1d: float = 0.7
     """Smoothing applied to 1D histograms (diagonal panels)."""
 
     def kwargs(self) -> dict[str, Any]:
