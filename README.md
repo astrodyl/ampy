@@ -1,106 +1,39 @@
-# WARNING
-I have been actively developing in a separate repo and I am currently
-moving features, one-by-one, into this public repo. At this time, this
-repo is not ready to use and is not complete. This message will be 
-updated once it is ready.
+# AMPy
 
-# Ampy
-___
-Afterglow modeling in Python (AMPy) provides a framework for modeling
-gamma-ray burst (GRB) afterglows. Documentation can be found on my
-GitBook: https://astrodyl.gitbook.io/astrodyl-docs/software-docs/ampy.
-It is currently limited since AMPy is under active development.
+AMPy (Afterglow Modeling in Python) is a complete inference package for modeling Gamma-ray burst afterglows. AMPy’s modular design allows easy integration of arbitrary third-party afterglow and extinction models, enabling use beyond the builtin generalized forward-shock implementations. The framework supports integrated-flux calculations for arbitrary bandpasses, spectral-index computation, and multi-band fitting over broadband light curves and spectra.
+
+It interfaces seamlessly with an MCMC sampling backend, providing flexible prior definitions, likelihood customization, and full posterior analysis tools. By combining physical realism with statistical rigor, AMPy serves as an end-to-end toolkit for parameter estimation, model testing, and interpreting the environments and physics of GRBs.
+
+Documentation can be found here: https://ampy-docs.readthedocs.io/en/latest/quickstart.html
 
 # Installation
-___
-As with all projects, I highly recommend using a virtual environment.
-After creating your `venv`, activate it, `cd` into the `ampy` directory,
-and run:
+The code is not published to PyPI yet, so please install it from source:
 
 ```
-pip install .
+git clone https://github.com/astrodyl/ampy.git
+cd ampy
+pip install -e .
 ```
 
-If you want to run the example scripts in `ampy/example/`, you will need
-to install the optional dependencies by running:
-
-```
-pip install .[plot]
-```
-This will install `matplotlib`, `arviz`, and `corner`.
-
-# Quick Start
-___
-
-See `run.py` in `ampy/example` for more details.
+# Quickstart
+Create an ``AMPy`` instance from a run configuration and perform MCMC sampling:
 
 ```Python
-# Specify IO objects
-parameters   = Parameters.from_toml(model_path)
-observation  = Observation.from_csv(data_path)
-mcmc_params  = utils.MCMCSettingsReader(mcmc_path)
-sampler_name = mcmc_params.data['sampler']['name']
+from ampy import AMPy
 
-# Choose your model (FireballModel, JetSimpy, etc.)
-model = FireballModel
+# Create AMPy instance from run configuration
+ampy = AMPy.from_toml("path/to/config/run.toml")
 
-# Create the MCMC object
-model_wrapper = MCMCModels(observation, model)
-mcmc = MCMC(model_wrapper, parameters)
-
-# Run MCMC. This may take a while..
-mcmc.run(
-    nwalkers=mcmc_params.num_walkers,
-    iterations=mcmc_params.run_length,
-    burn=mcmc_params.burn_length,
-    sampler=sampler_name,
-    workers=mcmc_params.workers,
-    ntemps=mcmc_params.ntemps,
+# Run MCMC and obtain the most likely parameters
+best = ampy.run_mcmc(
+    nwalkers=100,        # Number of walkers
+    iterations=1000,     # Number of production iterations
+    burn=1000,           # Number of burn-in iterations
+    sampler="tempered",  # Parallel tempered sampler
+    ntemps=10,           # Number of temperatures
 )
 
-# Return the mcmc object
-return mcmc
+ampy.generate_products("output/directory")
 ```
 
-There are some unit tests in the `ampy/test/` directory. These can be useful for
-figuring out how to use certain objects.
-
-# Optional Dependencies
-___
-
-## Parallel Tempering
-AMPy supports parallel tempering. Since the `emcee` stopped supporting PT 
-years ago, and since `ptemcee` also stopped receiving support, PT is
-not required during installation. To use parallel tempering, install
-[ptemcee]().
-Note that Windows users may need to clone the repo, empty the `README` file,
-and then `pip install` from source. There is a non-ASCII character in the
-`README` file that causes issues on Windows machines.
-
-## Models
-AMPy has built-in support for the numerical model `jetsimpy` 
-[[1]](https://ui.adsabs.harvard.edu/abs/2024ApJS..273...17W/abstract)
-and the boosted fireball model
-[[2]](https://ui.adsabs.harvard.edu/abs/2013ApJ...776L...9D/abstract)
-used in `JetFit`
-[[3]](https://ui.adsabs.harvard.edu/abs/2019PhDT........29W/abstract)
-. Use of these models require that the user install additional packages.
-
-### Using jetsimpy
-First, you need to install `jetsimpy` by cloning the
-[repo](https://github.com/haowang-astro/jetsimpy).
-Follow their installation instructions. Then, using jetsimpy is as simple
-as using the `JetSimpy` adapter in `ampy.mcmc.mcmc.JetSimpy`. If you would
-like to model self-absorption (crudely), you can install my forked version:
-[astrodyl/jetsimpy](https://github.com/astrodyl/jetsimpy/tree/develop)
-
-### Using Boosted Fireball
-I've currently written all the code required to use the boosted fireball model,
-including numerous optimizations compared to `JetFit`. However, I currently do not
-understand the tabulated hydrodynamic simulation results. Until I do, I'm' not
-feel comfortable provided it as a built-in option.
-
-### Afterglowpy
-I plan on adding an 
-`afterglowpy` [[4]](https://github.com/geoffryan/afterglowpy)
-adapter soon.
+The returned ``best`` dictionary contains the maximum-posterior parameter values from the inference run.
