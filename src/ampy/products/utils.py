@@ -36,7 +36,7 @@ def convert_value_to_mjy(data, value):
     return (quantity / data.int_range.width).to_value('mJy')
 
 
-def copy_plugins(plugins, obs=None):
+def copy_plugins(plugins, obs=None) -> list:
     """
     Deep-copies the list of plugins into a new list.
 
@@ -50,7 +50,7 @@ def copy_plugins(plugins, obs=None):
 
     Returns
     -------
-    iterable
+    list
         The deep-copied plugins.
     """
     plugins_copy = []

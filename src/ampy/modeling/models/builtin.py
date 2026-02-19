@@ -1,4 +1,5 @@
 import importlib
+import warnings
 
 import numpy as np
 from dust_extinction.parameter_averages import CCM89
@@ -965,6 +966,9 @@ class SBPowerLawModel(BasePowerLawModel):
         obs : ampy.core.obs.Observation
             The observational data.
 
+        params : dict, optional
+            For compatability with ``ampy.modeling.engin.ModelingEngine``.
+
         Returns
         -------
         np.ndarray of float
@@ -979,24 +983,83 @@ class SBPowerLawModel(BasePowerLawModel):
         ).model()
 
     def spectrum(self, t, n=None, k=None):
-        """
-        Returns the characteristics that define a GRB spectrum.
+        r"""
+        Compute synchrotron spectral characteristics of the GRB afterglow.
+
+        This method evaluates the characteristic quantities that define the
+        broadband synchrotron spectrum at observer-frame time(s) ``t`` for the
+        current afterglow model parameters. The returned quantities correspond
+        to the standard broken power-law synchrotron spectrum:
+
+        * :math:`F_{\nu,\mathrm{peak}}` — peak flux normalization
+        * :math:`\nu_a` — self-absorption frequency
+        * :math:`\nu_m` — characteristic synchrotron frequency
+        * :math:`\nu_c` — cooling frequency
+        * :math:`p` — electron energy index
+        * :math:`k` — circumburst density power-law index
+
+        The spectrum is computed assuming adiabatic evolution by default.
+        If ``self.radiative`` is enabled and a radiative solution exists
+        (:math:`\nu_m > \nu_c`), the method transitions from radiative to
+        adiabatic evolution at the radiative–adiabatic transition time and
+        smoothly joins the two regimes.
 
         Parameters
         ----------
-        t : float or np.ndarray of float
-            The observer-frame time(s) [d].
-
-        n : float or np.ndarray of float, optional
-            The effective density normalization [cm-3].
-
-        k : float or np.ndarray of float, optional
-            The effective power law indices.
+        t : float or array_like of float
+            Observer-frame time(s) in days.
+        n : float or array_like of float, optional
+            Effective number density normalization at the reference radius
+            ``self.ref_radius`` in cm⁻³. If not provided, the density evolution
+            is obtained from :meth:`smooth`.
+        k : float or array_like of float, optional
+            Effective circumburst density power-law index such that
+            :math:`\rho(R) \propto R^{-k}`. If not provided, values are obtained
+            from :meth:`smooth`.
 
         Returns
         -------
-        dict
-            keys: f_peak, nu_a, nu_m, nu_c, p, k.
+        dict[str, numpy.ndarray]
+            Dictionary containing the spectral characteristics evaluated at
+            each input time:
+
+            ``"f_peak"`` : ndarray
+                Peak flux normalization :math:`F_{\nu,\mathrm{peak}}` [mJy].
+            ``"nu_a"`` : ndarray
+                Synchrotron self-absorption frequency :math:`\nu_a` [Hz].
+            ``"nu_m"`` : ndarray
+                Characteristic synchrotron frequency :math:`\nu_m` [Hz].
+            ``"nu_c"`` : ndarray
+                Cooling frequency :math:`\nu_c` [Hz].
+            ``"p"`` : float
+                Electron energy power-law index.
+            ``"k"`` : ndarray
+                Effective density power-law index.
+
+        Notes
+        -----
+        * If ``n`` and ``k`` are not supplied, they are interpolated from the
+          smooth density profile using :meth:`smooth`.
+        * When radiative evolution is enabled, the method determines whether a
+          radiative solution exists (:math:`\nu_m > \nu_c`). If so, it computes
+          the radiative spectrum, determines the radiative–adiabatic transition
+          time, adjusts the blast-wave energy for radiative losses, and smoothly
+          transitions to the adiabatic solution.
+        * All spectral quantities are returned in the observer frame.
+
+        Examples
+        --------
+        Evaluate spectral characteristics at 1 day:
+
+        >>> spec = self.spectrum(1.0)
+        >>> spec["nu_m"], spec["nu_c"]
+
+        Evaluate over a time grid:
+
+        >>> t = np.logspace(-2, 2, 100)
+        >>> spec = self.spectrum(t)
+        >>> spec["f_peak"].shape
+        (100,)
         """
         t = np.atleast_1d(t)
 

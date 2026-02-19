@@ -1,3 +1,5 @@
+from inspect import isfunction
+
 import arviz as az
 import corner
 import numpy as np
@@ -9,6 +11,7 @@ from ampy.defaults import SpectralPlotDefaults, CornerPlotDefaults
 from ampy.defaults import DensityProfileDefaults, BandColorMap
 from ampy.modeling.engine import ModelingEngine
 from ampy.modeling.models.base import MassP
+from ampy.modeling.plugins import CalibrationPlugin
 from ampy.products import utils
 
 
@@ -248,7 +251,7 @@ def generate_model(obs, plugins, params, ndata=100) -> dict:
     """
     # Create a mock observation with `ndata` points for each band
     mock_obs = obs.mock(
-        subset=('Band', 'CalGroup'), ndata=ndata, exclude=['spectral index']
+        subset=('Band',), ndata=ndata, exclude=['spectral index']
     )
 
     # The plugins may have already been used to model another observation.
@@ -256,6 +259,12 @@ def generate_model(obs, plugins, params, ndata=100) -> dict:
     # data needs to be updated for the mock observation. Do that here using
     # copies of the provided plugins.
     plugins_copy = utils.copy_plugins(plugins, mock_obs)
+
+    # Remove the calibration plugin since we do not apply offsets here.
+    for plugin in plugins_copy:
+        if isinstance(plugin, CalibrationPlugin):
+            plugins_copy.remove(plugin)
+            break
 
     # Model the mock observation
     modeled = ModelingEngine(mock_obs)(plugins_copy, params)
@@ -490,16 +499,17 @@ def generate_density_profile_plot(
 
     # Assume that the first plugin is the base afterglow model
     model = param_view.plugins[0].model
+    plugin = param_view.plugins[0].name
 
     # Model and plot the density profiles for a series of samples
     ax = plot_density_profile(
-        model, obs, samples, param_view, ax, ndata,
+        model, plugin, obs, samples, param_view, ax, ndata,
         **DensityProfileDefaults().distribution.kwargs()
     )
 
     # Model and plot the density profiles for the best samples
     ax = plot_density_profile(
-        model, obs, [best_sample], param_view, ax, ndata,
+        model, plugin, obs, [best_sample], param_view, ax, ndata,
         **DensityProfileDefaults().best.kwargs()
     )
 
@@ -510,7 +520,7 @@ def generate_density_profile_plot(
 
 
 def plot_density_profile(
-    model, obs, samples, param_view, ax, ndata=100, **kwargs
+    model, plugin, obs, samples, param_view, ax, ndata=100, **kwargs
 ):
     """
     Generates the density profile curves.
@@ -519,6 +529,9 @@ def plot_density_profile(
     ----------
     model : callable
         The model containing `density_profile` and `blast_radius`.
+
+    plugin : str
+        The name of the base afterglow plugin.
 
     obs : ampy.core.obs.Observation
         The observational data.
@@ -546,7 +559,10 @@ def plot_density_profile(
     for sample in samples:
         params = param_view.samples_to_dict(sample)
 
-        model_obj = model(**params['afterglow_flux']['init'])
+        if isfunction(model):
+            model_obj = model(**params[plugin]['eval'])
+        else:
+            model_obj = model(**params[plugin]['init'])
 
         r = model_obj.blast_radius(times)
         n = model_obj.density(times)
@@ -780,11 +796,13 @@ def plot_spectral_breaks(
         'nu_c': nu_c if nu_a is not None else []
     }
 
+    # Get the default color mapping
+    colors = SpectralPlotDefaults().colors.mapping()
+
     for name, spectral_break in spectral_breaks.items():
         for curve in spectral_break:
             axes[0].loglog(
-                times, curve, color=SpectralPlotDefaults().colors.mapping()[name],
-                **nu_kwargs[name]
+                times, curve, color=colors[name], **nu_kwargs[name]
             )
 
     return fig, axes
@@ -930,7 +948,13 @@ def generate_spectral_indices(obs, samples, param_view, ndata=100):
     # Model the spectral indices
     for sample in samples:
         params = param_view.samples_to_dict(sample)
-        indices.append(ModelingEngine(mock_obs)(plugins_copy, params))
+
+        try:
+            # Prevent a bad sample set from causing a crash
+            index = ModelingEngine(mock_obs)(plugins_copy, params)
+            indices.append(index)
+        except ValueError as e:
+            print("Modeled an invalid index from a random sample.")
 
     return indices
 
