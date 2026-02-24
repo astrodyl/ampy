@@ -1,0 +1,8 @@
+# likelihood.toml
+plugin = "ChiSquaredPlugin"
+name   = "chi_squared"
+model  = "ampy.modeling.models.builtin.chi_squared_model"
+
+[[eval]]
+    name  = "slop"
+    prior = { type="uniform", lower=0.0, upper=0.2 }

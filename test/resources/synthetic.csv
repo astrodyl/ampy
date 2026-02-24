@@ -1,0 +1,31 @@
+Time,TimeUnits,Value,ValueLower,ValueUpper,ValueUnits,ValueType,Wave,WaveLower,WaveUpper,WaveUnits,Band,CalGroup,SlopGroup
+205.9999776,s,0.316637718,0.019,0.019,mJy,Spectral Flux,4.56E+14,,,Hz,R,R_offset,slop
+266.0000256,s,0.211091812,0.046,0.046,mJy,Spectral Flux,4.56E+14,,,Hz,R,R_offset,slop
+325.9999872,s,0.226169799,0.02,0.02,mJy,Spectral Flux,4.56E+14,,,Hz,R,R_offset,slop
+386.0000352,s,0.14034126,0.015,0.015,mJy,Spectral Flux,4.56E+14,,,Hz,R,R_offset,slop
+445.9999968,s,0.131062499,0.015,0.015,mJy,Spectral Flux,4.56E+14,,,Hz,R,R_offset,slop
+505.9999584,s,0.169337388,0.019,0.019,mJy,Spectral Flux,4.56E+14,,,Hz,R,R_offset,slop
+566.0000064,s,0.124103428,0.019,0.019,mJy,Spectral Flux,4.56E+14,,,Hz,R,R_offset,slop
+625.999968,s,0.082349004,0.014,0.014,mJy,Spectral Flux,4.56E+14,,,Hz,R,R_offset,slop
+686.000016,s,0.100906526,0.019,0.019,mJy,Spectral Flux,4.56E+14,,,Hz,R,R_offset,slop
+745.9999776,s,0.109025441,0.019,0.019,mJy,Spectral Flux,4.56E+14,,,Hz,R,R_offset,slop
+98.479,s,1.16E-10,2.38E-11,2.38E-11,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+112.135,s,4.83E-11,1.38E-11,1.38E-11,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+131.583,s,6.18E-11,1.43E-11,1.43E-11,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+147.341,s,3.26E-11,1.13E-11,1.13E-11,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+171.555,s,4.13E-11,1.18E-11,1.18E-11,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+583.507,s,1.70E-11,6.02E-12,6.02E-12,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+757.277,s,6.16E-12,1.39E-12,1.39E-12,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+976.563,s,5.63E-12,1.24E-12,1.24E-12,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+1182.095,s,5.31E-12,1.19E-12,1.19E-12,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+1407.616,s,4.45E-12,1.16E-12,1.16E-12,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+1602.629,s,4.26E-12,1.11E-12,1.11E-12,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+1889.134,s,4.12E-12,7.14E-13,7.14E-13,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+5556.443,s,1.64E-12,4.27E-13,4.27E-13,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+6233.112,s,1.26E-12,3.31E-13,3.31E-13,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+6755.846,s,1.67E-12,4.37E-13,4.37E-13,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+7452.984,s,1.25E-12,3.01E-13,3.01E-13,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+12382.482,s,5.66E-13,1.15E-13,1.15E-13,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+18181.369,s,4.67E-13,1.11E-13,1.11E-13,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+44245.521,s,1.30E-13,3.09E-14,3.09E-14,erg cm-2 s-1,Integrated Flux,,7.25E+16,2.42E+18,Hz,xray,,slop
+132,s,-7.00E-01,4.00E-01,6.00E-01,erg cm-2 s-1,Spectral Index,,7.25E+16,2.42E+18,Hz,,,

@@ -1,0 +1,26 @@
+# registry.toml
+
+# Base afterglow model
+[[plugins]]
+enabled = true
+include = "plugins/powerlaw.toml"
+
+# Source-frame dust extinciton
+[[plugins]]
+enabled = true
+include = "plugins/dust_sf.toml"
+
+# Milky Way dust extinction
+[[plugins]]
+enabled = true
+include = "plugins/dust_mw.toml"
+
+# Calibration offsets
+[[plugins]]
+enabled = true
+include = "plugins/calibration.toml"
+
+# Chi-squared effective "slop"
+[[plugins]]
+enabled = true
+include = "plugins/chisquared.toml"

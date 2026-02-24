@@ -10,9 +10,10 @@ from ampy.ampy import AMPy
 def parse_args():
     """ Optional command line arguments. """
     parser = argparse.ArgumentParser(description="AMPy Parameters")
-    parser.add_argument('--run_cfg', help='Run config path')
-    parser.add_argument('--inf_cfg', help='Inference config path')
+    parser.add_argument('--obs', help='Observation path')
     parser.add_argument('--out', help='Output directory')
+    parser.add_argument('--registry', help='Registry config path')
+    parser.add_argument('--inf_cfg', help='Inference config path')
     return parser.parse_args()
 
 
@@ -37,13 +38,16 @@ def generate_corner_plots(ampy, output_dir):
     ampy.corner_plot(('calibration', 'chi_squared'), stat_corner_path)
 
 
-def main(run_cfg, inf_cfg, output_dir,):
+def main(obs, registry, inf_cfg, output_dir,):
     """
     Main routine for running MCMC with AMPy.
 
     Parameters
     ----------
-    run_cfg : str or ``pathlib.Path``
+    obs : str or ``pathlib.Path``
+        The observation filepath.
+
+    registry : str or ``pathlib.Path``
         The path to the run config file.
 
     inf_cfg : str or ``pathlib.Path``
@@ -62,7 +66,7 @@ def main(run_cfg, inf_cfg, output_dir,):
         inf_data = tomllib.load(f)
 
     # Create AMPy instance from run configuration
-    ampy = AMPy.from_toml(run_cfg)
+    ampy = AMPy.from_registry(obs, registry)
 
     # Run MCMC and get the most likely parameters
     logging.info("Starting the AMPy run...")
@@ -81,7 +85,7 @@ def main(run_cfg, inf_cfg, output_dir,):
 
     # Generate the corner plots
     # The above call to ``generate_products`` already generates a corner plot,
-    # but it is a giga-all-in-one-plot. Each user will have a preference on
+    # but it is a mega-all-in-one-plot. Each user will have a preference on
     # how to split the corners, so do it the way we want here.
     generate_corner_plots(ampy, output_dir)
 
@@ -98,4 +102,4 @@ if __name__ == "__main__":
     if not os.path.exists(output):
         os.makedirs(output)
 
-    main(args.run_cfg, args.inf_cfg, output)
+    main(args.obs, args.registry, args.inf_cfg, output)

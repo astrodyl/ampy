@@ -7,8 +7,6 @@ files for reproducibility and easy sharing.
 .. toctree::
    :maxdepth: 2
 
-   run
    modeling
    plugins
-   inference
    observation

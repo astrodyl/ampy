@@ -1,7 +1,7 @@
-Modeling configuration
+Registry configuration
 ======================
 
-The *modeling configuration* defines which modeling components are applied
+The *registry configuration* defines which modeling components are applied
 during an AMPy run. It is composed of an ordered list of plugins, each of
 which points to a separate plugin configuration file.
 
@@ -12,7 +12,7 @@ details of each component.
 Overview
 --------
 
-The modeling configuration consists of a list of ``[[plugins]]`` entries.
+The registry configuration consists of a list of ``[[plugins]]`` entries.
 Each entry corresponds to a single plugin instance and references an
 external plugin configuration file.
 
@@ -42,32 +42,32 @@ Example
    # Base afterglow model
    [[plugins]]
    enabled = true
-   include = "C:/Projects/configs/registry/plugins/afterglow.toml"
+   include = "plugins/afterglow.toml"
 
    # Source-frame dust extinction
    [[plugins]]
    enabled = true
-   include = "C:/Projects/configs/registry/plugins/dust_sf.toml"
+   include = "plugins/dust_sf.toml"
 
    # Host galaxy contribution
    [[plugins]]
    enabled = false
-   include = "C:/Projects/configs/registry/plugins/host_galaxy.toml"
+   include = "plugins/host_galaxy.toml"
 
    # Milky Way dust extinction
    [[plugins]]
    enabled = true
-   include = "C:/Projects/configs/registry/plugins/dust_mw.toml"
+   include = "plugins/dust_mw.toml"
 
    # Calibration offsets
    [[plugins]]
    enabled = true
-   include = "C:/Projects/configs/registry/plugins/calibration.toml"
+   include = "plugins/calibration.toml"
 
    # Chi-squared "slop" term
    [[plugins]]
    enabled = true
-   include = "C:/Projects/configs/registry/plugins/chisquared.toml"
+   include = "plugins/chisquared.toml"
 
 Notes
 -----
@@ -83,4 +83,3 @@ See also
 --------
 
 * :doc:`plugins` — detailed description of plugin configuration files
-* :doc:`inference` — inference configuration

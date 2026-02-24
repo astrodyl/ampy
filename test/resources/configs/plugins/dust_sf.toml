@@ -1,0 +1,16 @@
+# dust_sf.toml
+plugin = "DustPlugin"
+name   = "source_frame_dust"
+model  = "ampy.modeling.models.builtin.source_dust_extinction_model"
+
+[[eval]]  # Redshift
+    name  = "z"
+    value = 2.006
+
+[[eval]]
+    name  = "Rv"
+    value = 3.1
+
+[[eval]]  # E(B - V) color excess
+    name  = "Ebv"
+    prior = { type="uniform", lower=0.0, upper=0.5 }

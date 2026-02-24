@@ -1,8 +1,8 @@
 import copy
+import numpy as np
+
 from contextlib import nullcontext
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-
-import numpy as np
 
 from ampy.inference.samplers import EnsembleSampler
 from ampy.inference.samplers import PTSampler
@@ -53,12 +53,26 @@ def get_pool_context(workers=None, executor='process'):
 
 class InferenceEngine:
     """
+    High-level driver for MCMC inference over an :class:`~ampy.modeling.engine.ModelingEngine`.
+
+    It manages sampler construction, initialization of starting positions,
+    optional burn-in, and the production run.
 
     Attributes
     ----------
     modeling_engine : ampy.modeling.engine.ModelingEngine
+        The engine used for forward modeling.
 
     param_view : ampy.core.params.ParameterView
+        Parameter and plugin view used by the sampler callbacks.
+
+    sampler : object or None
+        The active sampler instance (e.g.,
+        :class:`~ampy.inference.samplers.EnsembleSampler` or
+        :class:`~ampy.inference.samplers.PTSampler`).
+
+    burn_chain : np.ndarray or None
+        Copy of the burn-in chain, if burn-in was run and stored.
     """
     def __init__(self, modeling_engine, param_view):
         self.modeling_engine = modeling_engine
@@ -75,12 +89,18 @@ class InferenceEngine:
 
     def set_sampler(self, sampler, nwalkers, pool, ntemps=None, **kwargs):
         """
-        Sets the sampler. Duh.
+        Construct and assign the sampler used for inference.
 
         Parameters
         ----------
-        sampler : str
-            The sampler name. Must be `ensemble` or `tempered`.
+        sampler : {"ensemble", "tempered"}
+             Sampler backend to use.
+
+            - ``"ensemble"`` uses :class:`~ampy.inference.samplers.EnsembleSampler`
+              (affine-invariant ensemble sampling).
+            - ``"tempered"`` uses :class:`~ampy.inference.samplers.PTSampler`
+              (parallel tempering).
+
 
         nwalkers : int
             The number of walkers.
@@ -89,7 +109,7 @@ class InferenceEngine:
             The pool to use for multithreading/processing.
 
         ntemps : int, optional
-            The number of temperatures for `tempered`.
+            Number of temperatures (required for ``"tempered"``).
 
         kwargs
             Any kwargs accepted by the sampler.
@@ -111,17 +131,18 @@ class InferenceEngine:
 
     def set_start_positions(self, resume=False):
         """
-        Determines the starting positions.
+        Determine starting positions for the sampler.
 
         Parameters
         ----------
         resume : bool, optional, default=False
-            Use the end of a previous run to determine the starting positions?
+            If `True` and the sampler exposes ``get_last_sample()``, start
+            from the last recorded sample (typically from a backend).
 
         Returns
         -------
         np.ndarray or `emcee.State`
-            The starting positions.
+            Starting positions in the format expected by the active sampler.
         """
         if resume and hasattr(self.sampler, 'get_last_sample'):
             # Use the backend to determine start positions
@@ -171,6 +192,12 @@ class InferenceEngine:
 
         resume : bool, optional, default=False
             Resume from a previous run?
+
+        Notes
+        -----
+        Burn-in storage uses a deepcopy of the burn chain rather than
+        deep-copying the sampler, because copying the sampler can detach or
+        invalidate the pool used for parallelism.
         """
         with get_pool_context(workers) as pool:
             self.set_sampler(
@@ -205,11 +232,21 @@ class InferenceEngine:
 
     def summary(self):
         """
-        Returns a dict containing summary info on the engine.
+        Summarize the current sampling run.
 
         Returns
         -------
         dict
+            Dictionary containing:
+
+            - ``sampler``: sampler name
+            - ``burn_iters``: number of burn-in iterations stored (0 if none)
+            - ``prod_iters``: number of production iterations completed
+            - ``nwalkers``: number of walkers
+            - ``nmap_idx``: index of the maximum a-posteriori (MAP) sample in
+                the flattened log-probability array
+            - ``nmap_val``: ``-2 * max(log_prob)``, which is often used as a
+              deviance-like quantity (smaller is better)
         """
         flat_chain = self.sampler.get_log_prob(flat=True)
 
@@ -297,9 +334,11 @@ def log_likelihood_model(theta, engine, param_view):
     theta : np.ndarray of float
         The MCMC sampled values.
 
-    engine : modeling.engine.ModelingEngine
+    engine : ``ampy.modeling.engine.ModelingEngine``
+        The MCMC Modeling engine.
 
-    param_view : ampy.core.params.ParameterView
+    param_view : ``ampy.core.params.ParameterView``
+        The parameter viewer used to map the MCMC samples to dicts.
 
     Returns
     -------

@@ -395,10 +395,11 @@ class CalibrationPlugin(PluginBase):
         Parameters
         ----------
         obs : ``ampy.core.obs.Observation``
-
+            The observation object.
 
         Returns
         -------
+        ``ampy.modeling.plugins.CalibrationPlugin``
         """
         defaults = CalibrationDefaults()
 
@@ -418,6 +419,7 @@ class CalibrationPlugin(PluginBase):
                 "ampy.modeling.models.builtin.calibration_offset_model"
             )
         )
+
 
 class ChiSquaredPlugin(PluginBase):
     """ Likelihood plugin adapter for AMPy. """
