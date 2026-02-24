@@ -1,4 +1,3 @@
-import os
 import pathlib
 import tomllib
 
@@ -17,7 +16,7 @@ from ampy.products import utils
 
 class AMPy:
     """
-    Facade for Afterglow Modeling in Python (AMPy).
+    High-level interface for Afterglow Modeling in Python (AMPy).
 
     Parameters
     ----------
@@ -29,58 +28,33 @@ class AMPy:
         self._status = StatusType.READY
 
     @classmethod
-    def load(cls, path):
+    def from_registry(cls, obs, path):
         """
-        Load AMPy from a config file.
+        Load the modeling engine from a registry file.
 
         Parameters
         ----------
-        path : str or pathlib.Path
-            The path to the config file.
+        obs : str or ``pathlib.Path`` or ``ampy.core.obs.Observation``
+            The input observation. If a filepath is provided, the observation
+            is loaded using ``ampy.core.obs.Observation.load(obs)``.
+
+        path : str or ``pathlib.Path``
+            The path to the registry TOML file.
 
         Returns
         -------
         ampy.ampy.AMPy
         """
-        if path.endswith('.toml'):
-            return cls.from_toml(path)
+        if isinstance(obs, (str, pathlib.Path)):
+            obs = Observation.load(obs)
 
-        raise NotImplementedError("Only TOMLs are supported!")
-
-    @classmethod
-    def from_toml(cls, path):
-        """
-        Load the modeling engine from a TOML file.
-
-        Parameters
-        ----------
-        path : str or pathlib.Path
-            The path to the TOML file.
-
-        Returns
-        -------
-        ampy.ampy.AMPy
-        """
-        path = pathlib.Path(path)
-
+        # Load the registry config
         with open(path, "rb") as f:
             data = tomllib.load(f)
 
-        # Load the input observation
-        if not (o_path := pathlib.Path(data['input']["path"])).is_absolute():
-            o_path = path.parent / o_path
-        obs = Observation.load(o_path)
-
-        # Load the model config
-        if not (m_path := pathlib.Path(data['modeling']["path"])).is_absolute():
-            m_path = path.parent / m_path
-
-        with open(m_path, "rb") as f:
-            m_data = tomllib.load(f)
-
         # Load the plugins
         plugins = load_plugins(
-            m_data['plugins'], base_dir=m_path.parent, obs=obs
+            data['plugins'], base_dir=pathlib.Path(path).parent, obs=obs
         )
 
         # Create the parameter mapper

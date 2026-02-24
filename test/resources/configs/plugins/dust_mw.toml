@@ -1,0 +1,12 @@
+# dust_mw.toml
+plugin = "DustPlugin"
+name   = "milky_way_dust"
+model  = "ampy.modeling.models.builtin.galactic_dust_extinction_model"
+
+[[eval]]
+    name  = "Rv"
+    value = 3.1
+
+[[eval]]
+    name  = "Ebv"
+    value = 0.0647

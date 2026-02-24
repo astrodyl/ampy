@@ -11,5 +11,6 @@ AMPy workflows.
 .. toctree::
    :maxdepth: 2
 
+   engine
    priors
    samplers

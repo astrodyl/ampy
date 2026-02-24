@@ -1,0 +1,5 @@
+# calibration.toml
+plugin   = "CalibrationPlugin"
+name     = "calibration"
+model    = "ampy.modeling.models.builtin.calibration_offset_model"
+defaults = true

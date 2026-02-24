@@ -1,0 +1,54 @@
+# afterglow.toml
+name     = "afterglow_flux"
+plugin   = "AfterglowFluxPlugin"
+model    = "ampy.modeling.models.builtin.PowerLawModel"
+
+[[init]]  # Isotropic-equivalent energy
+    name  = "E52"
+    infer_scale = "log"
+    model_scale = "linear"
+    prior = { type="uniform", lower=-2.0, upper=4.0 }
+
+[[init]]  # Initial Lorentz factor
+    name  = "lf0"
+    infer_scale = "log"
+    model_scale = "linear"
+    prior = { type="uniform", lower=1.69, upper=3.0 }
+
+[[init]]  # Number density at 1e17cm
+    name  = "n017"
+    infer_scale = "log"
+    model_scale = "linear"
+    prior = { type="uniform", lower=-6.0, upper=6.0}
+
+[[init]]  # Electron fraction
+    name  = "eps_e"
+    infer_scale = "log"
+    model_scale = "linear"
+    prior = { type="uniform", lower=-6.0, upper=0.0}
+
+[[init]]  # Magnetic field fraction
+    name  = "eps_b"
+    infer_scale = "log"
+    model_scale = "linear"
+    prior = { type="uniform", lower=-6.0, upper=0.0}
+
+[[init]]  # Electron energy index
+    name  = "p"
+    prior = { type="uniform", lower=2.0, upper=3.0}
+
+[[init]]  # Density power law index
+    name  = "k"
+    prior = { type="uniform", lower=-3.0, upper=3.0}
+
+[[init]]  # Hydrogen mass fraction
+    name  = "hmf"
+    value = 0.7
+
+[[init]]  # Redshift
+    name  = "z"
+    value = 2.006
+
+[[init]]  # Luminosity distance / 1e28cm
+    name  = "dL28"
+    value = 4.94
